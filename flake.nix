@@ -41,6 +41,39 @@
         }
       );
 
+      nixosModules.default =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
+        let
+          cfg = config.services.scoreserver;
+          scoreserverPkgs = self.packages.${pkgs.system};
+        in
+        {
+          options = {
+            services.scoreserver = {
+              enable = lib.mkEnableOption "Enable scoreserver";
+              databaseUri = lib.mkOption {
+                default = "sqlite:////tmp/test.db";
+                type = with lib.types; str;
+              };
+            };
+          };
+
+          config = lib.mkIf cfg.enable {
+            systemd.services.scoreserver = {
+              wantedBy = [ "multi-user.target" ];
+              environment = {
+                SQLALCHEMY_DATABASE_URI = "${cfg.databaseUri}";
+              };
+              serviceConfig.ExecStart = "${scoreserverPkgs.default}/bin/scoreserver";
+            };
+          };
+        };
+
       devShells = forAllSystems (
         system:
         let
