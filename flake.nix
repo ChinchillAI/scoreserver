@@ -41,6 +41,13 @@
         }
       );
 
+      apps = forAllSystems (system: {
+        default = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/scoreserver";
+        };
+      });
+
       nixosModules.default =
         {
           config,
@@ -57,7 +64,7 @@
             services.scoreserver = {
               enable = lib.mkEnableOption "Enable scoreserver";
               databaseUri = lib.mkOption {
-                default = "sqlite:////tmp/test.db";
+                default = "sqlite:////tmp/scoreserver-tmp.db";
                 type = with lib.types; str;
               };
             };

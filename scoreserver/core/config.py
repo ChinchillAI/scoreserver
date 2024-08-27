@@ -6,7 +6,7 @@ class Settings(BaseSettings):
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
 
-    SQLALCHEMY_DATABASE_URI: str = "sqlite://"
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:////tmp/scoreserver-tmp.db"
 
 
 settings = Settings()
